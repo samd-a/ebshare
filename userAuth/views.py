@@ -3,6 +3,9 @@ from django.shortcuts import render_to_response
 
 # Create your views here.
 def renderSignup(request):
+	"""
+	here we will manage all signup stuff
+	"""
 	return render_to_response("userAuth/signup.html")
 
 def renderSignin(request):

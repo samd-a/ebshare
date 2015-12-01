@@ -95,6 +95,17 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+# DATABASES = {
+#   'default': {
+#     'ENGINE': 'django.db.backends.mysql',
+#     'NAME': 'ebshop',
+#     'USER': 'root',
+#     'PASSWORD':'password',
+#     'HOST':'',
+#     'PORT':'',
+#   },
+# }
+AUTH_USER_MODEL = 'userAuth.User'
 
 
 # Internationalization

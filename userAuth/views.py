@@ -1,12 +1,26 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response
+from django.http import HttpResponse, HttpResponseRedirect
+
+from userAuth.models import User
 
 # Create your views here.
 def renderSignup(request):
-	"""
-	here we will manage all signup stuff
-	"""
-	return render_to_response("userAuth/signup.html")
+  """
+  here we will manage all signup stuff
+  """
+  if request.method=="GET":
+    return render(request, "userAuth/signup.html")
+  if request.method=="POST":
+    params = dict()
+    params['user']='logged_in'
+    name = request.POST['name']
+    email = request.POST['email']
+    confirm_email = request.POST['confirm_email']
+    if email==confirm_email:
+      user = User(name=name,username=email, email=email)
+      user.save()
+      return render(request, "homePage/home.html", params)
 
 def renderSignin(request):
 	return render_to_response("userAuth/signin.html")
@@ -53,50 +67,3 @@ def renderSignin(request):
 #     args.update(csrf(request))
 #     return render_to_response('user_auth/login.html', args)
 
-# @login_required
-# def logout_user(request):
-#     """
-#     :param: HttpRequest
-#     :rtype: HttpResponse
-#     This function handles log the user out from the website. 
-#     """
-
-#     logout(request)
-#     return render_to_response('home/home.html', {})
-
-# def register(request):
-#     """
-#     :param: HttpRequest
-#     :rtype: HttpResponse
-#     This method handles registering new users. All neccessary information is
-#     taken from **register.html** page, and those information is passed into
-#     **RegisterForm** and the class method **register_form()** will process 
-#     the information.
-#     """
-#     user = None
-#     # handles registering.
-#     title = 'Register'
-#     args = {}
-#     if request.method == 'POST':
-#         # it means that we received inputs from the user.
-#         # Then, fill them out.
-#         form = RegisterForm(request.POST)
-#         # check if all inputs are valid.
-#         if form.is_valid():
-#             if_error = form.register_form()
-#             if not if_error:
-#                 args = {'title':'Username Exists', 'valid':False}
-#                 return render_to_response('user_auth/register.html', args)
-#             return HttpResponseRedirect('/')
-#         else:
-#             # form is not valid.
-#             args = {'title':'Data is not valid', 'valid':False}
-#             return render_to_response('user_auth/register.html', args)
-#     else:
-#         form = RegisterForm()
-
-#     args = {'form' : form,
-#             'title' : title,
-#             'valid':True}
-#     args.update(csrf(request)) # Guess passing csrf token to the template.
-#     return render_to_response('user_auth/register.html', args)

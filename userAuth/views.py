@@ -1,6 +1,13 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.views import login
+from django.utils.decorators import method_decorator
+from django.contrib.auth import (login as auth_login)
+from django.contrib.auth import (logout as auth_logout)
+from django.contrib.auth.decorators import login_required
+from django.views.generic import View
+from django.contrib.auth import authenticate
 
 from userAuth.models import User
 
@@ -10,7 +17,9 @@ def renderSignup(request):
   here we will manage all signup stuff
   """
   if request.method=="GET":
-    return render(request, "userAuth/signup.html")
+    params = dict()
+    params['user']=''
+    return render(request, "userAuth/signup.html",params)
   if request.method=="POST":
     params = dict()
     params['user']='logged_in'
@@ -20,10 +29,35 @@ def renderSignup(request):
     if email==confirm_email:
       user = User(name=name,username=email, email=email)
       user.save()
-      return render(request, "homePage/home.html", params)
+      return HttpResponse("registered successfully now admin will approve soon")
 
 def renderSignin(request):
-	return render_to_response("userAuth/signin.html")
+  """
+  all login stuff, just need to confirm how to set password,
+  than we will implement these, till than its on hold.
+  """
+  if request.method == 'GET':
+      params = dict()
+      params["view"] = "login"
+      return render(request, "userAuth/signin.html", params)
+  if request.method == 'POST':
+      if not request.POST.get('remember', None):
+          request.session.set_expiry(0)
+      else:
+          request.session.set_expiry(10)
+      return login(request, *args, **kwargs)
+
+
+class LoginRequiredMixin(object):
+  @method_decorator(login_required)
+  def dispatch(self, *args, **kwargs):
+      return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
+
+
+class Logout(LoginRequiredMixin, View):
+    def get(self,request):
+        auth_logout(request)
+        return HttpResponseRedirect('/')
 
 
 # From METSCAV

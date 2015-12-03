@@ -26,8 +26,11 @@ def renderSignup(request):
     name = request.POST['name']
     email = request.POST['email']
     confirm_email = request.POST['confirm_email']
-    if email==confirm_email:
+    password = request.POST['password']
+    cnfrm_password = request.POST['cnfrm_password']
+    if (email==confirm_email and password==cnfrm_password):
       user = User(name=name,username=email, email=email)
+      user.set_password(password)
       user.save()
       return HttpResponse("registered successfully now admin will approve soon")
 
